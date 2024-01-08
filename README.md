@@ -92,7 +92,38 @@ Plusieurs solution sont possible,
 
 Pour ce projet j'ai choisi d'éditer un schéma directement dans Prisma pour que ce dernier puisse alimenter ma base de donnée.
 
-###Instalation de Prisma et initialisation
+## Installer et initialiser GraphQL qui va fonctionner avec Prisma
+graphQL sera mon interface entre le back-end et le front-end
+
+##### Faire un projet Nest.js
+```nest new <nom-du-projet>```
+
+##### Installer le paquet @nestjs/graphql, qui permet d'intégrer GraphQL dans une application Nest.js :
+```npm install @nestjs/graphql graphql @nestjs/core @nestjs/common @nestjs/platform-express```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Instalation de Prisma et initialisation
 ##### Instalation des dépendances au sein du projet
 ```npm install prisma @prisma/client```
 ##### Initialisez le projet Prisma avec la commande suivante et suivre les étapes du guide d'initialisation interactif
@@ -109,13 +140,3 @@ Si une modification doit être effectuée sur la structure de la DB faire cette 
 
 Pour générer le fichier prisma côté client :
 ```npx prisma generate```
-
-## Installer et initialiser GraphQL qui va fonctionner avec Prisma
-graphQL sera mon interface entre le back-end et le front-end
-
-##### Faire un projet Nest.js
-```nest new <nom-du-projet>```
-
-##### Installer le paquet @nestjs/graphql, qui permet d'intégrer GraphQL dans une application Nest.js :
-```npm install @nestjs/graphql graphql```
-
