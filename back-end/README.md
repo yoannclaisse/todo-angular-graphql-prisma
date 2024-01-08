@@ -108,6 +108,8 @@ Ce module va se connecter au 'service' prisma et va configurer graphql
 ##### Installer apollo-server-express, qui est souvent utilisé pour gérer les requêtes et les réponses GraphQL dans une application Express (qui est la base de Nest.js) :
 ```npm install apollo-server-express```
 
+##### communication entre Nest.js et graphQL
+
 
 
 
