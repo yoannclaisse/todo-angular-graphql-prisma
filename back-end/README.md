@@ -130,9 +130,6 @@ Ce module va se connecter au 'service' prisma et va configurer graphql
 
 
 
-
-
-
 ## Instalation de Prisma et initialisation
 ##### Instalation des dépendances au sein du projet
 ```npm install prisma @prisma/client```
@@ -150,3 +147,7 @@ Si une modification doit être effectuée sur la structure de la DB faire cette 
 
 Pour générer le fichier prisma côté client :
 ```npx prisma generate```
+
+
+
+import { resolvers } from "../prisma/generated/type-graphql";
