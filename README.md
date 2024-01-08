@@ -101,6 +101,11 @@ graphQL sera mon interface entre le back-end et le front-end
 ##### Installer le paquet @nestjs/graphql, qui permet d'intégrer GraphQL dans une application Nest.js :
 ```npm install @nestjs/graphql graphql @nestjs/core @nestjs/common @nestjs/platform-express```
 
+##### Ensuite, vous pouvez créer un module GraphQL en utilisant la commande Nest CLI pour générer un module
+Ce module va se connecter au 'service' prisma
+```npx nest generate module graphql```
+
+
 
 
 
