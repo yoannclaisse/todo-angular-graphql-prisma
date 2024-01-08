@@ -21,5 +21,9 @@ Pour ce projet j'ai choisi d'éditer un schéma directement dans Prisma pour que
 ##### Initialisez le projet Prisma avec la commande suivante et suivre les étapes du guide d'initialisation interactif
 ```npx prisma init```
 Cela génère un fichier prisma et un fichier .env (s'il n'est pas déja présent)
-Il faut maintenant adapté la .env avec les informations du compose.yaml afin que Prisma puisse comprendre se connecter à cette DB
+Il faut maintenant adapté la .env avec les informations du compose.yaml afin que Prisma puisse comprendre se connecter à cette DB.
+Depuis ce fichier schema.prisma et y mettre un schéma dedans afin que Prisma puisse remplir la DB.
+
+Après avoir défini le schéma, appliquez les modifications à la base de données avec la commande :
+```npx prisma db push```
 
