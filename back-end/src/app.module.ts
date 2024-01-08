@@ -5,13 +5,15 @@ import { AppService } from './app.service';
 import { GraphQLModule } from '@nestjs/graphql';
 // Import de config Apollo
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { GraphqltoprismaModule } from './graphqltoprisma/graphqltoprisma.module';
 
 
 @Module({
   imports: [
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-    })
+    }),
+    GraphqltoprismaModule
   ],
   controllers: [AppController],
   providers: [AppService],
