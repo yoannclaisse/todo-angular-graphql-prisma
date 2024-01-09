@@ -1,15 +1,16 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { join } from 'path';
-import { buildSchema } from "type-graphql";
-import { resolvers } from "../prisma/generated/type-graphql";
-import { resolve } from "path";
 // Ce module est importer directement car j'ai utiliser le cli de nest
 import { GraphQLModule } from '@nestjs/graphql';
 // Import de config Apollo
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import { GraphqltoprismaModule } from './graphqltoprisma/graphqltoprisma.module';
+import { PrismaClient } from '@prisma/client';
+import { resolve } from 'path';
+import { TypeGraphQLModule } from "typegraphql-nestjs";
+
+
+interface Context {
+  prisma: PrismaClient;
+}
 
 import {
   User,
@@ -20,22 +21,26 @@ import {
   TodoCrudResolver,
 } from "../prisma/generated/type-graphql";
 
+
 @Module({
   imports: [
-    GraphQLModule.forRoot<ApolloDriverConfig>({
+    // use the TypeGraphQLModule to expose Prisma by GraphQL
+    TypeGraphQLModule.forRoot({
       driver: ApolloDriver,
       path: "/",
-      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-      sortSchema: true
+      // le schema ira dans le fichier présent dans le outdir du tsconfig
+      emitSchemaFile: resolve(__dirname, "./generated-schema.graphql"),
+      validate: false,
+      context: (): Context => ( { prisma: new PrismaClient() }),
     }),
-    GraphqltoprismaModule
   ],
-  controllers: [AppController],
   providers: [
-    AppService,
+    // register all resolvers inside `providers` of the Nest module
     UserRelationsResolver,
-    TodoRelationsResolver,
     UserCrudResolver,
-    TodoCrudResolver,],
+    TodoRelationsResolver,
+    TodoCrudResolver,
+  ],
 })
-export class AppModule {}
+export class AppModule {
+}
