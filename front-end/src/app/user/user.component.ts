@@ -8,5 +8,10 @@ import { Component } from '@angular/core';
   styleUrl: './user.component.scss'
 })
 export class UserComponent {
+  
+  // Function onclick button
+  userTodos(userValue: String) {
+    console.log(userValue)
+  }
 
 }
