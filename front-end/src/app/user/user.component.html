@@ -1,8 +1,9 @@
 <section>
-  <form>
     <input type="text" placeholder="Your Name Here !!" #userName />
     <button class="primary" type="button" (click)="userTodos(userName.value)">
-      Add
+      find your todo
     </button>
-  </form>
+    <button class="primary" type="button" (click)="createUser(userName.value)">
+      add
+    </button>
 </section>

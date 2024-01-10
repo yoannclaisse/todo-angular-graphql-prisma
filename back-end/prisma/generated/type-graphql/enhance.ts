@@ -363,7 +363,7 @@ export function applyOutputTypesEnhanceMap(
 const inputsInfo = {
   UserWhereInput: ["AND", "OR", "NOT", "id", "username", "email", "todos"],
   UserOrderByWithRelationInput: ["id", "username", "email", "todos"],
-  UserWhereUniqueInput: ["id", "email", "AND", "OR", "NOT", "username", "todos"],
+  UserWhereUniqueInput: ["id", "username", "email", "AND", "OR", "NOT", "todos"],
   UserOrderByWithAggregationInput: ["id", "username", "email", "_count", "_avg", "_max", "_min", "_sum"],
   UserScalarWhereWithAggregatesInput: ["AND", "OR", "NOT", "id", "username", "email"],
   TodoWhereInput: ["AND", "OR", "NOT", "id", "title", "description", "completed", "createdAt", "updatedAt", "userId", "user"],

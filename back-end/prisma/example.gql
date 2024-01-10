@@ -26,14 +26,20 @@ mutation UpdateTodoTest($updateTodo: TodoUpdateInput!, $filter: TodoWhereUniqueI
 # ================ QUERY ==================
 
 # QUERY pour récuprer les infos des users
-query {users {id todos{title description user{id}}}}
+query getUsersWithTodos{users {id todos{title description user{id}}}}
+
+# QUERY pour les todos par le username
+query getTodosByUsername($where: TodoWhereInput){todos(where: $where){id title description user{username}}}
+
+# QUERY qui recup' d'abord le user et les todos qui lui sont affiliées
+query getUserByNameWithTodos($input: UserWhereUniqueInput!){getUser(where: $input){username todos{description id title}}}
 
 
 
 # ================ QUERY VARIABLES ==================
 {"user": {"username": "yoyo2", "email": "test2@gmail.fr", "todos": []}}
 
-
+# variable pour CreateTodo
 {
     { "todoData": 
         {
@@ -44,6 +50,7 @@ query {users {id todos{title description user{id}}}}
     }
 }
 
+# variable pour UpdateTodoTest
 {
     "updateTodo":
     {
@@ -55,3 +62,14 @@ query {users {id todos{title description user{id}}}}
         "id": 1
     }
 }
+
+# variable pour getTodosByUsername
+{
+    "where":
+  {
+    "user": {"is": {"username": {"equals": "yoyo"}}}
+  }
+}
+
+# variable d'entrée pour getUserByNameWithTodos
+{"input": {"username": "yoyo4"}}

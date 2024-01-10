@@ -2,7 +2,6 @@ import * as TypeGraphQL from "type-graphql";
 import * as GraphQLScalars from "graphql-scalars";
 import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../../scalars";
-import { StringFilter } from "../inputs/StringFilter";
 import { TodoListRelationFilter } from "../inputs/TodoListRelationFilter";
 import { UserWhereInput } from "../inputs/UserWhereInput";
 
@@ -12,6 +11,11 @@ export class UserWhereUniqueInput {
     nullable: true
   })
   id?: number | undefined;
+
+  @TypeGraphQL.Field(_type => String, {
+    nullable: true
+  })
+  username?: string | undefined;
 
   @TypeGraphQL.Field(_type => String, {
     nullable: true
@@ -32,11 +36,6 @@ export class UserWhereUniqueInput {
     nullable: true
   })
   NOT?: UserWhereInput[] | undefined;
-
-  @TypeGraphQL.Field(_type => StringFilter, {
-    nullable: true
-  })
-  username?: StringFilter | undefined;
 
   @TypeGraphQL.Field(_type => TodoListRelationFilter, {
     nullable: true

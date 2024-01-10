@@ -16,9 +16,9 @@ services:
       # maps port 5432 of the PostgreSQL container to port 5432 of your host machine.
       - '6009:5432'
     # Volumes
-    volumes:
-      # Creates a persistent volume by linking your host machine's ./data directory to the container's /var/lib/postgresql/data directory, which ensures that the database data is persistent even if the container is shut down.
-      - ./data:/var/lib/postgresql/data
+    # volumes:
+    #   # Creates a persistent volume by linking your host machine's ./data directory to the container's /var/lib/postgresql/data directory, which ensures that the database data is persistent even if the container is shut down.
+    #   - ./data:/var/lib/postgresql/data
 
   # this service is for GUI pgadmin4
   # pgadmin:
