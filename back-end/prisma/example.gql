@@ -1,0 +1,57 @@
+# ================ MUTATION ==================
+
+# MUTATION pour créer un user
+mutation($user: UserCreateInput!){createOneUser(data: $user){id}}
+
+# MUTATION pour créer une todo ATTENTION: il faut rensigner un id de user
+mutation CreateTodo($todoData: TodoCreateInput!) {
+  createOneTodo(data: $todoData) {
+    id
+    title
+    description
+    completed
+    createdAt
+    updatedAt
+    userId
+  }
+}
+
+# MUTATION pour update une todo
+mutation UpdateTodoTest($updateTodo: TodoUpdateInput!, $filter: TodoWhereUniqueInput!) {
+  updateOneTodo(data: $updateTodo, where: $filter){title completed id updatedAt createdAt}
+}
+
+
+
+# ================ QUERY ==================
+
+# QUERY pour récuprer les infos des users
+query {users {id todos{title description user{id}}}}
+
+
+
+# ================ QUERY VARIABLES ==================
+{"user": {"username": "yoyo2", "email": "test2@gmail.fr", "todos": []}}
+
+
+{
+    { "todoData": 
+        {
+            "title": "test title",
+            "description": "test descriptionnnnnnn",
+            "user": {"connect": {"id": 1}}
+        },
+    }
+}
+
+{
+    "updateTodo":
+    {
+        "title": {"set": "I just modify the title"},
+        "completed": {"set": true}
+    },
+    "filter": 
+    {
+        "id": 1
+    }
+}
