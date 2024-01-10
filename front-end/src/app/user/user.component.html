@@ -6,4 +6,14 @@
     <button class="primary" type="button" (click)="createUser(userName.value)">
       add
     </button>
+    <label>
+        {{ resultStatus }}
+    </label>
+    <ul>
+        @for (todo of todos; track todo.id) {
+            <li>{{ todo.title }}</li>
+          } @empty {
+            Empty list of todos
+          }
+    </ul>
 </section>
