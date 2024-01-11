@@ -11,12 +11,6 @@ generator typegraphql {
   output   = "../prisma/generated/type-graphql"
 }
 
-// generator typegraphql {
-//   provider = "typegraphql-prisma-nestjs"
-//   output   = "../prisma/generated/nestjs"
-//   emitIsAbstract = true
-// }
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -25,7 +19,7 @@ datasource db {
 model User {
   id       Int      @id @default(autoincrement())
   username String   @unique
-  email    String   @unique
+  email    String   
   todos    Todo[]
 }
 
