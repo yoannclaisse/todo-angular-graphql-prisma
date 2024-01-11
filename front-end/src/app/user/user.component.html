@@ -1,19 +1,33 @@
 <section>
     <input type="text" placeholder="Your Name Here !!" #userName />
-    <!-- <button class="primary" type="button" (click)="userTodos(userName.value)">
+    <button class="primary" type="button" (click)="userTodos(userName.value)">
       find your todo
-    </button> -->
+    </button>
     <button class="primary" type="button" (click)="createUser(userName.value)">
-      add
+      add user
     </button>
     <label>
         {{ resultStatus }}
     </label>
     <ul>
         @for (todo of user.todos; track todo.id) {
-            <li>{{ todo.title }}</li>
+            <li>
+              {{ todo.title }}
+              <button class="primary" type="button" (click)="removeTodo(todo.id)">
+                remove task
+              </button>
+            </li>
           } @empty {
             Empty list of todos
-          }
+        }
+        @if (user.id > 0) {
+          <li>
+            <input type="text" placeholder="Your title here !!" #todoTitle/>
+            <input type="text" placeholder="Your task here !!" #todoDescription/>
+            <button class="primary" type="button" (click)="createTodo(todoTitle.value, todoDescription.value)">
+              add task
+            </button>
+          </li>
+        }
     </ul>
 </section>

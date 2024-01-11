@@ -25,6 +25,12 @@ export interface TodosQueryResponse {
     errors: any
 }
 
+export interface TodoQueryResponse {
+    todo: Todo | null;
+    createOneTodo: Todo | null;
+    errors: any
+}
+
 export interface UserQueryResponse {
     createOneUser: User | null
     user: User | null;
