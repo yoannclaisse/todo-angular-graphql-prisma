@@ -1,6 +1,6 @@
 // Ce service va servir à faire toutes les requêtes graphql
 import { Injectable } from '@angular/core';
-import { Apollo } from 'apollo-angular';
+import { Apollo, MutationResult } from 'apollo-angular';
 import { HttpLink } from 'apollo-angular/http';
 import { InMemoryCache, ApolloQueryResult, gql } from '@apollo/client/core';
 import { Observable, of } from 'rxjs';
@@ -12,6 +12,9 @@ const GET_TODOS_BY_USERNAME_QUERY = gql`
 `
 
 const GET_USER_BY_NAME_WITH_TODOS = gql `query getUserByNameWithTodos($input: UserWhereUniqueInput!){user(where: $input){username todos{description id title}}}`
+
+const CREATE_USER = gql `mutation($input: UserCreateInput!){createOneUser(data: $input){id username}}`
+
 
 @Injectable({
   providedIn: 'root'
@@ -32,5 +35,12 @@ export class GraphqlService {
       query: GET_USER_BY_NAME_WITH_TODOS,
       variables: { "input": {"username": username} }
     }).valueChanges;
+  }
+
+  createUser(username: String): Observable<MutationResult<UserQueryResponse>> {
+    return this.apollo.mutate<UserQueryResponse>({
+      mutation: CREATE_USER,
+      variables: {"input": {"username": username, "email": "test6@gmail.com", "todos": []}}
+    })
   }
 }

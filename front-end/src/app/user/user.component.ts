@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { GraphqlService  } from '../graphql.service';
-import { Todo, TodosQueryResponse, UserQueryResponse } from '../models/graphql.model';
+import { Todo, TodosQueryResponse, User, UserQueryResponse } from '../models/graphql.model';
 import { ApolloQueryResult } from '@apollo/client/core';
-import { Apollo } from 'apollo-angular';
+import { Apollo, MutationResult } from 'apollo-angular';
 @Component({
   selector: 'app-user',
   standalone: true,
@@ -13,34 +13,53 @@ import { Apollo } from 'apollo-angular';
 })
 export class UserComponent {
   resultStatus: String = ""
-  todos: Array<Todo> = []
-  constructor(private GraphqlService: GraphqlService) {}
-  // Function onclick button
-  userTodos(userValue: String) {
+  // todos: Array<Todo> = []
+  user: User = {id: 0, username: "",  email: "", todos: []}
+  
+  constructor(private GraphqlService: GraphqlService) {
+
+  }
+  createUser(userValue: String) {
     // si le champs est vide rien ne se passe
     this.resultStatus = ""
     if(!userValue) {
-      this.resultStatus = "please enter a name"
       return
     }
     this.GraphqlService
-      .getUserTodos(userValue).subscribe((result: ApolloQueryResult<UserQueryResponse>) => {
-        console.log('Result : ', result)
-        const user = result.data.user
+      .createUser(userValue).subscribe((result: MutationResult<UserQueryResponse>) => {
+        console.log(result)
+        const user = result?.data?.createOneUser
+        console.log("User :", user)
         if(!user) {
-          this.resultStatus = "user not found"
+          this.resultStatus = "user already exist"
           return
         }
-        this.resultStatus = `welcome : ${user.username}` 
-        this.todos = user.todos
+        this.resultStatus = `${user.username} : created` 
+        // this.todos = user.todos
+        this.user = user
       })
   }
 
-  createUser(userValue: String) {
-    // si le champs est vide rien ne se passe
-    if(!userValue) {
-      return
-    }
-    console.log(userValue)
-  }
+  // Function onclick button
+  // userTodos(userValue: String) {
+  //   // si le champs est vide rien ne se passe
+  //   this.resultStatus = ""
+  //   if(!userValue) {
+  //     this.resultStatus = "please enter a name"
+  //     return
+  //   }
+  //   this.GraphqlService
+  //     .getUserTodos(userValue).subscribe((result: ApolloQueryResult<UserQueryResponse>) => {
+  //       console.log('Result : ', result)
+  //       const user = result.data.user
+  //       console.log("user :", user)
+  //       if(!user) {
+  //         this.resultStatus = "user not found"
+  //         return
+  //       }
+  //       this.resultStatus = `welcome : ${user.username}` 
+  //       // this.todos = user.todos
+  //       this.user = user
+  //     })
+  // }
 }

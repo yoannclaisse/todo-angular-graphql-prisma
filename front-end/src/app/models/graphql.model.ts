@@ -26,6 +26,7 @@ export interface TodosQueryResponse {
 }
 
 export interface UserQueryResponse {
+    createOneUser: User | null
     user: User | null;
     errors: any
 }
