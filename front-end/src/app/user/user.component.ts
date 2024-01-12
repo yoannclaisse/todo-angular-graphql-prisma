@@ -118,17 +118,8 @@ export class UserComponent {
       return
     }
     this.GraphqlService
-      .getUserTodos(userValue).subscribe((result: ApolloQueryResult<UserQueryResponse>) => {
-        console.log('Result : ', result)
-        const user = result.data.user
-        console.log("user :", user)
-        if (!user) {
-          this.resultStatus = "user not found"
-          return
-        }
-        this.resultStatus = `welcome : ${user.username}`
-        // this.todos = user.todos
-        this.user = user
-      })
+      .getUserTodos(userValue).subscribe((result: User) => {
+        this.user = result
+      },(error: any) => {console.log("ERROR :", error)})
   }
 }
