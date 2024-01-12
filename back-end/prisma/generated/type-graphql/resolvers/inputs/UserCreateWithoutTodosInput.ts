@@ -11,7 +11,7 @@ export class UserCreateWithoutTodosInput {
   username!: string;
 
   @TypeGraphQL.Field(_type => String, {
-    nullable: false
+    nullable: true
   })
-  email!: string;
+  email?: string | undefined;
 }

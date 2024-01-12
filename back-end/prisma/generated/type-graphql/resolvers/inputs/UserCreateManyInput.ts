@@ -16,7 +16,7 @@ export class UserCreateManyInput {
   username!: string;
 
   @TypeGraphQL.Field(_type => String, {
-    nullable: false
+    nullable: true
   })
-  email!: string;
+  email?: string | undefined;
 }

@@ -11,13 +11,14 @@
     </label>
     <ul>
         @for (todo of user.todos; track todo.id) {
-            <li>
+            <li [class.checked]="todo.completed">
+              <input type="checkbox" #completed [checked]="todo.completed" (change)="changeTodo( todo.id, completed.checked, title.value, description.value)"/>
               <input type="text" #title value="{{ todo.title }}"/>
               <input type="text" #description value="{{ todo.description }}"/>
               <button class="primary" type="button" (click)="removeTodo(todo.id)">
                 remove task
               </button>
-              <button class="primary" type="button" (click)="changeTodo( todo.id, title.value, description.value)">
+              <button class="primary" type="button" (click)="changeTodo( todo.id, completed.checked, title.value, description.value)">
                 modify task
               </button>
             </li>
@@ -28,7 +29,7 @@
           <li>
             <input type="text" placeholder="Your title here !!" [(ngModel)]="newTitle"/>
             <input type="text" placeholder="Your task here !!" [(ngModel)]="newDescription"/>
-            <button class="primary" type="button" (click)="createTodo()">
+            <button class="primary" type="button" (click)="addTodo()">
               add task
             </button>
           </li>

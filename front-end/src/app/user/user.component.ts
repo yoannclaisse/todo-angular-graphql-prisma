@@ -53,7 +53,7 @@ export class UserComponent {
       })
   }
 
-  createTodo(/*title: String, description: String*/) {
+  addTodo(/*title: String, description: String*/) {
     if (!this.newTitle) {
       this.resultStatus = "no title define"
       return
@@ -95,16 +95,16 @@ export class UserComponent {
       })
   }
 
-  changeTodo(id: Number, updatedTitle: String, updatedDescription: String) {
+  changeTodo(id: Number, updatedComplete: Boolean, updatedTitle: String, updatedDescription: String) {
     let updatedTodo = this.user.todos.find(todo => todo.id == id)
     console.log("variable :", updatedTodo)
     if (!!updatedTodo) {
       // updatedTodo.title = updatedTitle
-      updatedTodo = { ...updatedTodo, title: updatedTitle, description: updatedDescription };
+      updatedTodo = { ...updatedTodo, title: updatedTitle, description: updatedDescription, completed: updatedComplete };
       this.GraphqlService
         .updateTodo(updatedTodo).subscribe((result: MutationResult<TodoQueryResponse>) => {
           console.log("Result :", result)
-          return
+          // TODO: update this.user
         })
     }
   }

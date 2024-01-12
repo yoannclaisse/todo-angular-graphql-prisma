@@ -11,7 +11,7 @@ const GET_TODOS_BY_USERNAME_QUERY = gql`
   query getTodosByUsername($where: TodoWhereInput){todos(where: $where){id title description user{username}}}
 `
 
-const GET_USER_BY_NAME_WITH_TODOS = gql `query getUserByNameWithTodos($input: UserWhereUniqueInput!){user(where: $input){id username todos{description id title}}}`
+const GET_USER_BY_NAME_WITH_TODOS = gql `query getUserByNameWithTodos($input: UserWhereUniqueInput!){user(where: $input){id username todos{description id title completed}}}`
 
 const CREATE_USER = gql `mutation($input: UserCreateInput!){createOneUser(data: $input){id username}}`
 
@@ -32,12 +32,15 @@ const UPDATE_TODO = gql `mutation($input: TodoUpdateInput! $where: TodoWhereUniq
   {
     title
     description
+    completed
   }
 }`
 @Injectable({
   providedIn: 'root'
 })
 export class GraphqlService {
+
+  // 
 
   constructor(private apollo: Apollo, private httpLink: HttpLink) {
     // c'est ici que ça connecte le front avec le back
@@ -58,7 +61,7 @@ export class GraphqlService {
   createUser(username: String): Observable<MutationResult<UserQueryResponse>> {
     return this.apollo.mutate<UserQueryResponse>({
       mutation: CREATE_USER,
-      variables: {"input": {"username": username, "email": "test6@gmail.com", "todos": []}}
+      variables: {"input": {"username": username}}
     })
   }
 
@@ -80,7 +83,7 @@ export class GraphqlService {
     return this.apollo.mutate<TodoQueryResponse>({
       mutation: UPDATE_TODO,
       variables: {
-        "input": {"title": {"set": todo.title}},
+        "input": {"title": {"set": todo.title}, "description": {"set": todo.description}, "completed": {"set": todo.completed}},
         "where": {"id": todo.id}
       }
     })

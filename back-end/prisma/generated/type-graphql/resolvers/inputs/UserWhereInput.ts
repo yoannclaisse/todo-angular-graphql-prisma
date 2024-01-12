@@ -4,6 +4,7 @@ import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../../scalars";
 import { IntFilter } from "../inputs/IntFilter";
 import { StringFilter } from "../inputs/StringFilter";
+import { StringNullableFilter } from "../inputs/StringNullableFilter";
 import { TodoListRelationFilter } from "../inputs/TodoListRelationFilter";
 
 @TypeGraphQL.InputType("UserWhereInput", {})
@@ -33,10 +34,10 @@ export class UserWhereInput {
   })
   username?: StringFilter | undefined;
 
-  @TypeGraphQL.Field(_type => StringFilter, {
+  @TypeGraphQL.Field(_type => StringNullableFilter, {
     nullable: true
   })
-  email?: StringFilter | undefined;
+  email?: StringNullableFilter | undefined;
 
   @TypeGraphQL.Field(_type => TodoListRelationFilter, {
     nullable: true
