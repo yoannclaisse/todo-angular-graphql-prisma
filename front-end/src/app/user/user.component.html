@@ -12,9 +12,13 @@
     <ul>
         @for (todo of user.todos; track todo.id) {
             <li>
-              {{ todo.title }}
+              <input type="text" #title value="{{ todo.title }}"/>
+              <input type="text" #description value="{{ todo.description }}"/>
               <button class="primary" type="button" (click)="removeTodo(todo.id)">
                 remove task
+              </button>
+              <button class="primary" type="button" (click)="changeTodo( todo.id, title.value, description.value)">
+                modify task
               </button>
             </li>
           } @empty {
@@ -22,9 +26,9 @@
         }
         @if (user.id > 0) {
           <li>
-            <input type="text" placeholder="Your title here !!" #todoTitle/>
-            <input type="text" placeholder="Your task here !!" #todoDescription/>
-            <button class="primary" type="button" (click)="createTodo(todoTitle.value, todoDescription.value)">
+            <input type="text" placeholder="Your title here !!" [(ngModel)]="newTitle"/>
+            <input type="text" placeholder="Your task here !!" [(ngModel)]="newDescription"/>
+            <button class="primary" type="button" (click)="createTodo()">
               add task
             </button>
           </li>

@@ -4,7 +4,7 @@ import { Apollo, MutationResult } from 'apollo-angular';
 import { HttpLink } from 'apollo-angular/http';
 import { InMemoryCache, ApolloQueryResult, gql } from '@apollo/client/core';
 import { Observable, of } from 'rxjs';
-import { TodosQueryResponse, UserQueryResponse, TodoQueryResponse } from './models/graphql.model';
+import { TodosQueryResponse, UserQueryResponse, TodoQueryResponse, Todo } from './models/graphql.model';
 
 // variavle pour faire la requete graphql
 const GET_TODOS_BY_USERNAME_QUERY = gql`
@@ -26,6 +26,14 @@ const CREATE_TODO = gql `mutation CreateTodo($input: TodoCreateInput!) {
 
 const DELETE_TODO = gql `mutation($input: TodoWhereUniqueInput!) {deleteOneTodo(where: $input){id}}`
 
+const UPDATE_TODO = gql `mutation($input: TodoUpdateInput! $where: TodoWhereUniqueInput!)
+{
+  updateOneTodo(data: $input where: $where)
+  {
+    title
+    description
+  }
+}`
 @Injectable({
   providedIn: 'root'
 })
@@ -57,7 +65,7 @@ export class GraphqlService {
   createTodo(title: String, description: String, userId: Number): Observable<MutationResult<TodoQueryResponse>> {
     return this.apollo.mutate<TodoQueryResponse>({
       mutation: CREATE_TODO,
-      variables: {"input": {"title": title, "description": "description", "user": {"connect": {"id": userId}}}}
+      variables: {"input": {"title": title, "description": description, "user": {"connect": {"id": userId}}}}
     })
   }
 
@@ -65,6 +73,16 @@ export class GraphqlService {
     return this.apollo.mutate<TodoQueryResponse>({
       mutation: DELETE_TODO,
       variables: {"input": {"id": todoId}}
+    })
+  }
+
+  updateTodo(todo: Todo): Observable<MutationResult<TodoQueryResponse>> {
+    return this.apollo.mutate<TodoQueryResponse>({
+      mutation: UPDATE_TODO,
+      variables: {
+        "input": {"title": {"set": todo.title}},
+        "where": {"id": todo.id}
+      }
     })
   }
 }
