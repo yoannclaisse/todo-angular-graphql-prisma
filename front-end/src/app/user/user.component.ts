@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { GraphqlService } from '../graphql.service';
-import { Todo, TodoQueryResponse, TodosQueryResponse, User, UserQueryResponse } from '../models/graphql.model';
-import { ApolloQueryResult } from '@apollo/client/core';
+import { Todo, TodoQueryResponse, User } from '../models/graphql.model';
 import { Apollo, MutationResult } from 'apollo-angular';
 import {FormsModule} from '@angular/forms';
 @Component({
@@ -31,26 +30,15 @@ export class UserComponent {
     }
 
     this.GraphqlService
-      .createUser(userValue).subscribe((result: MutationResult<UserQueryResponse>) => {
-        // ne fonctionne pas correctement:
-        // même si champs vide en db l'id user s'incrémente quand même
-        // Quand on reclick sur add et que le user est créé ça ne me reseigne pas "user already exist"
-        console.log("Result :", result)
-        const user = result?.data?.createOneUser
-        console.log("User :", user)
-        if (!user) {
-          this.resultStatus = "unable to create user"
-          return
-        }
-        this.resultStatus = `${user.username} : created`
-        // this.todos = user.todos
-        this.user = user
-      }, (error: any) => {
-        console.log(error)
+      .createUser(userValue).subscribe((result: User) => {
+        this.resultStatus = `${result.username} : created`
+        this.user = result
+      },(error: any) => {
+        console.log("ERROR :", error)
         if (String(error).includes("Unique constraint failed on the fields: (`username`)")) {
           this.resultStatus = "user already exists"
         }
-      })
+    })
   }
 
   addTodo(/*title: String, description: String*/) {

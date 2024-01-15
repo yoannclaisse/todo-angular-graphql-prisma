@@ -58,6 +58,7 @@ export class GraphqlService {
       subscriber.complete()
     })
     this.observableUser.subscribe(
+      // prochaine valeur à recevoir
       { next(user: User) { console.log(user) } },
       { error(error: any) { console.log(error) } },
       { complete() { console.log("subscription is closed") } }
@@ -67,12 +68,10 @@ export class GraphqlService {
   // fonction du service
   getUserTodos(username: String): Observable<User> {
     return new Observable<User>((subscriber) => {
-      const observableResult = this.apollo.watchQuery<UserQueryResponse>({
+      this.apollo.watchQuery<UserQueryResponse>({
         query: GET_USER_BY_NAME_WITH_TODOS,
         variables: { "input": { "username": username } }
-      }).valueChanges;
-
-      observableResult.subscribe((result: ApolloQueryResult<UserQueryResponse>) => {
+      }).valueChanges.subscribe((result: ApolloQueryResult<UserQueryResponse>) => {
         console.log('Result : ', result)
         const user = result.data.user
         console.log("user :", user)
@@ -81,14 +80,35 @@ export class GraphqlService {
         } else {
           subscriber.error("user not found")
         }
-      })
+      }, (error: any) => {
+        subscriber.error(error)
+      }
+      )
     })
   }
 
-  createUser(username: String): Observable<MutationResult<UserQueryResponse>> {
-    return this.apollo.mutate<UserQueryResponse>({
-      mutation: CREATE_USER,
-      variables: { "input": { "username": username } }
+  createUser(username: String): Observable<User> {
+    return new Observable<User>((subscriber) => {
+      this.apollo.mutate<UserQueryResponse>({
+        mutation: CREATE_USER,
+        variables: { "input": { "username": username } }
+      })
+      .subscribe((result: MutationResult<UserQueryResponse>) => {
+        // ne fonctionne pas correctement:
+        // même si champs vide en db l'id user s'incrémente quand même
+        // Quand on reclick sur add et que le user est créé ça ne me reseigne pas "user already exist"
+        console.log("Result :", result)
+        const user = result?.data?.createOneUser
+        console.log("User :", user)
+        if (!user) {
+          subscriber.error("unable to create user")
+        } else {
+          subscriber.next(user)
+        }
+        
+      }, (error: any) => {
+        subscriber.error(error)
+      })
     })
   }
 
