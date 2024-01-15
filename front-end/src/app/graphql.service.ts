@@ -175,4 +175,29 @@ export class GraphqlService {
       })
     }) 
   }
+
+  // updateTodo2(todo: Todo): Todo | null {
+  //     this.apollo.mutate<TodoQueryResponse>({
+  //       mutation: UPDATE_TODO,
+  //       variables: {
+  //         "input": { "title": { "set": todo.title }, "description": { "set": todo.description }, "completed": { "set": todo.completed } },
+  //         "where": { "id": todo.id }
+  //       }
+  //     }).subscribe((result: MutationResult<TodoQueryResponse>) => {
+  //       console.log("Result :", result)
+  //       let todo = result?.data?.deleteOneTodo
+  //       if (!!todo) {
+  //         return todo
+  //         // subscriberEvent.next(todo)
+  //       } else {
+  //         // subscriberEvent.error("unable to update Todo")
+  //         throw new Error("unable to update Todo")
+  //         return null
+  //       }
+  //     }, (error: any) => {
+  //       // subscriberEvent.error(error)
+  //       throw new Error(error)
+  //       return null
+  //     }) 
+  // }
 }
