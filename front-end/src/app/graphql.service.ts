@@ -93,46 +93,82 @@ export class GraphqlService {
         mutation: CREATE_USER,
         variables: { "input": { "username": username } }
       })
-      .subscribe((result: MutationResult<UserQueryResponse>) => {
-        // ne fonctionne pas correctement:
-        // même si champs vide en db l'id user s'incrémente quand même
-        // Quand on reclick sur add et que le user est créé ça ne me reseigne pas "user already exist"
+        .subscribe((result: MutationResult<UserQueryResponse>) => {
+          // ne fonctionne pas correctement:
+          // même si champs vide en db l'id user s'incrémente quand même
+          // Quand on reclick sur add et que le user est créé ça ne me reseigne pas "user already exist"
+          console.log("Result :", result)
+          const user = result?.data?.createOneUser
+          console.log("User :", user)
+          if (!user) {
+            subscriber.error("unable to create user")
+          } else {
+            subscriber.next(user)
+          }
+
+        }, (error: any) => {
+          subscriber.error(error)
+        })
+    })
+  }
+
+  createTodo(title: String, description: String, userId: Number): Observable<Todo> {
+    return new Observable<Todo>((subscriber) => {
+      this.apollo.mutate<TodoQueryResponse>({
+        mutation: CREATE_TODO,
+        variables: { "input": { "title": title, "description": description, "user": { "connect": { "id": userId } } } }
+      }).subscribe((result: MutationResult<TodoQueryResponse>) => {
         console.log("Result :", result)
-        const user = result?.data?.createOneUser
-        console.log("User :", user)
-        if (!user) {
-          subscriber.error("unable to create user")
+        let todo = result?.data?.createOneTodo
+        if (!!todo) {
+          subscriber.next(todo)
         } else {
-          subscriber.next(user)
+          subscriber.error("unable to create Todo")
         }
-        
       }, (error: any) => {
         subscriber.error(error)
       })
     })
   }
 
-  createTodo(title: String, description: String, userId: Number): Observable<MutationResult<TodoQueryResponse>> {
-    return this.apollo.mutate<TodoQueryResponse>({
-      mutation: CREATE_TODO,
-      variables: { "input": { "title": title, "description": description, "user": { "connect": { "id": userId } } } }
+  deleteTodo(todoId: Number): Observable<Todo> {
+    return new Observable<Todo>((subscriberEvent) => {
+      this.apollo.mutate<TodoQueryResponse>({
+        mutation: DELETE_TODO,
+        variables: { "input": { "id": todoId } }
+      }).subscribe((result: MutationResult<TodoQueryResponse>) => {
+        console.log("Result :", result)
+        let todo = result?.data?.deleteOneTodo
+        if (!!todo) {
+          subscriberEvent.next(todo)
+        } else {
+          subscriberEvent.error("unable to delete Todo")
+        }
+      }, (error: any) => {
+        subscriberEvent.error(error)
+      })
     })
   }
 
-  deleteTodo(todoId: Number): Observable<MutationResult<TodoQueryResponse>> {
-    return this.apollo.mutate<TodoQueryResponse>({
-      mutation: DELETE_TODO,
-      variables: { "input": { "id": todoId } }
-    })
-  }
-
-  updateTodo(todo: Todo): Observable<MutationResult<TodoQueryResponse>> {
-    return this.apollo.mutate<TodoQueryResponse>({
-      mutation: UPDATE_TODO,
-      variables: {
-        "input": { "title": { "set": todo.title }, "description": { "set": todo.description }, "completed": { "set": todo.completed } },
-        "where": { "id": todo.id }
-      }
-    })
+  updateTodo(todo: Todo): Observable<Todo> {
+    return new Observable<Todo>((subscriberEvent) => {
+      this.apollo.mutate<TodoQueryResponse>({
+        mutation: UPDATE_TODO,
+        variables: {
+          "input": { "title": { "set": todo.title }, "description": { "set": todo.description }, "completed": { "set": todo.completed } },
+          "where": { "id": todo.id }
+        }
+      }).subscribe((result: MutationResult<TodoQueryResponse>) => {
+        console.log("Result :", result)
+        let todo = result?.data?.deleteOneTodo
+        if (!!todo) {
+          subscriberEvent.next(todo)
+        } else {
+          subscriberEvent.error("unable to update Todo")
+        }
+      }, (error: any) => {
+        subscriberEvent.error(error)
+      })
+    }) 
   }
 }

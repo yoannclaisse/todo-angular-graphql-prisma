@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { GraphqlService } from '../graphql.service';
-import { Todo, TodoQueryResponse, User } from '../models/graphql.model';
-import { Apollo, MutationResult } from 'apollo-angular';
-import {FormsModule} from '@angular/forms';
+import { Todo, User } from '../models/graphql.model';
+import { Apollo } from 'apollo-angular';
+import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-user',
   standalone: true,
@@ -19,7 +19,7 @@ export class UserComponent {
   newTitle: String = ""
   newDescription: String = ""
 
-  constructor(private GraphqlService: GraphqlService) {}
+  constructor(private GraphqlService: GraphqlService) { }
 
   createUser(userValue: String) {
     // si le champs est vide rien ne se passe
@@ -33,12 +33,12 @@ export class UserComponent {
       .createUser(userValue).subscribe((result: User) => {
         this.resultStatus = `${result.username} : created`
         this.user = result
-      },(error: any) => {
+      }, (error: any) => {
         console.log("ERROR :", error)
         if (String(error).includes("Unique constraint failed on the fields: (`username`)")) {
           this.resultStatus = "user already exists"
         }
-    })
+      })
   }
 
   addTodo(/*title: String, description: String*/) {
@@ -55,17 +55,13 @@ export class UserComponent {
       return
     }
     this.GraphqlService
-      .createTodo(this.newTitle, this.newDescription, this.user.id).subscribe((result: MutationResult<TodoQueryResponse>) => {
-        console.log("Result :", result)
-        let todo = result?.data?.createOneTodo
-        if (!!todo) {
-          // this.user.todos = [...this.user.todos, todo]
-          // this.user.todos.push(todo)
-          if (!!this.user.todos) {
-            this.user = { ...this.user, todos: [...this.user.todos, todo] };
-          } else {
-            this.user = { ...this.user, todos: [todo] };
-          }
+      .createTodo(this.newTitle, this.newDescription, this.user.id).subscribe((todo: Todo) => {
+        this.user.todos = [...this.user.todos, todo]
+        this.user.todos.push(todo)
+        if (!!this.user.todos) {
+          this.user = { ...this.user, todos: [...this.user.todos, todo] };
+        } else {
+          this.user = { ...this.user, todos: [todo] };
         }
         // Clear the input field value
         this.newTitle = '';
@@ -75,7 +71,7 @@ export class UserComponent {
 
   removeTodo(id: Number) {
     this.GraphqlService
-      .deleteTodo(id).subscribe((result: MutationResult<TodoQueryResponse>) => {
+      .deleteTodo(id).subscribe((result: Todo) => {
         console.log("Result :", result)
         // le filter est un foreach avec un if dedand et retourne un autre tableau filtrer par le if
         const todos = this.user.todos.filter(todo => todo.id != id)
@@ -90,7 +86,7 @@ export class UserComponent {
       // updatedTodo.title = updatedTitle
       updatedTodo = { ...updatedTodo, title: updatedTitle, description: updatedDescription, completed: updatedComplete };
       this.GraphqlService
-        .updateTodo(updatedTodo).subscribe((result: MutationResult<TodoQueryResponse>) => {
+        .updateTodo(updatedTodo).subscribe((result: Todo) => {
           console.log("Result :", result)
           // TODO: update this.user
         })
@@ -108,6 +104,6 @@ export class UserComponent {
     this.GraphqlService
       .getUserTodos(userValue).subscribe((result: User) => {
         this.user = result
-      },(error: any) => {console.log("ERROR :", error)})
+      }, (error: any) => { console.log("ERROR :", error) })
   }
 }

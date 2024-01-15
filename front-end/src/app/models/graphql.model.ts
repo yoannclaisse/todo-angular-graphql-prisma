@@ -27,6 +27,7 @@ export interface TodosQueryResponse {
 
 export interface TodoQueryResponse {
     todo: Todo | null;
+    deleteOneTodo: Todo | null
     createOneTodo: Todo | null;
     errors: any
 }
