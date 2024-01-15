@@ -5,6 +5,8 @@ import { HttpLink } from 'apollo-angular/http';
 import { InMemoryCache, ApolloQueryResult, gql } from '@apollo/client/core';
 import { Observable, of } from 'rxjs';
 import { TodosQueryResponse, UserQueryResponse, TodoQueryResponse, Todo, User } from './models/graphql.model';
+import { environment } from './../environments/environment';
+
 
 // variavle pour faire la requete graphql
 const GET_TODOS_BY_USERNAME_QUERY = gql`
@@ -47,7 +49,9 @@ export class GraphqlService {
     // c'est ici que ça connecte le front avec le back
     this.apollo.create({
       cache: new InMemoryCache(),
-      link: httpLink.create({ uri: 'http://localhost:3000/graphql' }),
+      // ENVIRONMENT
+      // Fetches from http://my-prod-url in production, http://my-dev-url in development.
+      link: httpLink.create({ uri: environment.apiUrl }),
     })
 
     // new observable
