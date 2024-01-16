@@ -13,7 +13,7 @@ const GET_TODOS_BY_USERNAME_QUERY = gql`
   query getTodosByUsername($where: TodoWhereInput){todos(where: $where){id title description user{username}}}
 `
 
-const GET_USER_BY_NAME_WITH_TODOS = gql`query getUserByNameWithTodos($input: UserWhereUniqueInput!){user(where: $input){id username todos{description id title completed}}}`
+const GET_USER = gql`query getUserByNameWithTodos($input: UserWhereUniqueInput!){user(where: $input){id username todos{description id title completed}}}`
 
 const CREATE_USER = gql`mutation($input: UserCreateInput!){createOneUser(data: $input){id username}}`
 
@@ -40,11 +40,17 @@ const UPDATE_TODO = gql`mutation($input: TodoUpdateInput! $where: TodoWhereUniqu
 @Injectable({
   providedIn: 'root'
 })
+
 export class GraphqlService {
 
   // Observable
   observableUser: any
 
+  /**
+   * 
+   * @param apollo 
+   * @param httpLink 
+   */
   constructor(private apollo: Apollo, private httpLink: HttpLink) {
     // c'est ici que ça connecte le front avec le back
     this.apollo.create({
@@ -54,7 +60,7 @@ export class GraphqlService {
       link: httpLink.create({ uri: environment.apiUrl }),
     })
 
-    // new observable
+    // new observable for example
     this.observableUser = new Observable<User>((subscriber) => {
       subscriber.next({ username: "JP", id: 0, email: "test@gmail.com", todos: [] });
       subscriber.next({ username: "JD", id: 0, email: "test@gmail.com", todos: [] });
@@ -70,53 +76,95 @@ export class GraphqlService {
   }
 
   // fonction du service
+  /**
+   * 
+   * @param username 
+   * @returns {Observable<User>}
+   */
+  // Méthode de classe qui est une focntion qui récupère le user et les todos qui lui sont affectés
   getUserTodos(username: String): Observable<User> {
-    return new Observable<User>((subscriber) => {
+    // On stock l'observable valueChanges dans graphqlRequest
+    const graphqlRequest =
       this.apollo.watchQuery<UserQueryResponse>({
-        query: GET_USER_BY_NAME_WITH_TODOS,
+        query: GET_USER,
         variables: { "input": { "username": username } },
         fetchPolicy: "no-cache"
-      }).valueChanges.subscribe((result: ApolloQueryResult<UserQueryResponse>) => {
-        console.log('Result : ', result)
-        const user = result.data.user
-        console.log("user :", user)
-        if (!!user) {
-          subscriber.next(user)
-        } else {
-          subscriber.error("user not found")
-        }
-      }, (error: any) => {
-        subscriber.error(error)
-      }
-      )
-    })
+      }).valueChanges
+
+    // On crée et retourne un Observable de User et on definit le comportement de l'observable
+    // Le subscriber définit le comportement lorsqu'on va faire un appel .subscribe
+    return new Observable<User>(
+      (subscriber) => {
+        // on subscribe a graphqlRequest pour recup' le resultat de la requêt graphQL
+        graphqlRequest.subscribe(
+          // le "next" est ici et se déclenche quand la requête graphQL se passe bien
+          (result: ApolloQueryResult<UserQueryResponse>) => {
+            // le traitement sépare la requête graphQL de la donnée qui nous intéresse c'est à dire le user
+            console.log('Result : ', result)
+            const user = result.data.user
+            console.log("user :", user)
+            // ON verifie qu'il n'est pas null/vide/undefined
+            if (!!user) {
+              // on déclenche l'evt "next"
+              subscriber.next(user)
+            } else {
+              // sinon l'evt "error"
+              subscriber.error("user not found")
+            }
+          },
+          // le bloc error de graphQL
+          (error: any) => {
+            // On déclenche l'evt error, on transfère l'error graphQL
+            subscriber.error(error)
+          }
+        )
+      })
   }
 
+  /**
+   * 
+   * @param username 
+   * @returns 
+   */
+  // Méthode de classe qui est une focntion qui crée le user
   createUser(username: String): Observable<User> {
+    // On crée et retourne un Observable de User et on definit le comportement de l'observable
+    // Le subscriber définit le comportement lorsqu'on va faire un appel .subscribe 
     return new Observable<User>((subscriber) => {
+      // requête apollo pour créer un user
       this.apollo.mutate<UserQueryResponse>({
         mutation: CREATE_USER,
         variables: { "input": { "username": username } }
       })
+        // on subscribe a la requête graphQL pour recup' le resultat de la requêt graphQL
         .subscribe((result: MutationResult<UserQueryResponse>) => {
-          // ne fonctionne pas correctement:
-          // même si champs vide en db l'id user s'incrémente quand même
-          // Quand on reclick sur add et que le user est créé ça ne me reseigne pas "user already exist"
           console.log("Result :", result)
           const user = result?.data?.createOneUser
           console.log("User :", user)
           if (!user) {
+            // On déclenche l'evt error
             subscriber.error("unable to create user")
           } else {
+            // On déclenche l'evt next
             subscriber.next(user)
           }
 
-        }, (error: any) => {
-          subscriber.error(error)
-        })
+        },
+        // On entre dans l'evt error de la requête graphQL
+          (error: any) => {
+            // On transfère le message d'erreur
+            subscriber.error(error)
+          })
     })
   }
 
+  /**
+   * 
+   * @param title 
+   * @param description 
+   * @param userId 
+   * @returns 
+   */
   createTodo(title: String, description: String, userId: Number): Observable<Todo> {
     return new Observable<Todo>((subscriber) => {
       this.apollo.mutate<TodoQueryResponse>({
@@ -136,6 +184,11 @@ export class GraphqlService {
     })
   }
 
+  /**
+   * 
+   * @param todoId 
+   * @returns 
+   */
   deleteTodo(todoId: Number): Observable<Todo> {
     return new Observable<Todo>((subscriberEvent) => {
       this.apollo.mutate<TodoQueryResponse>({
@@ -155,6 +208,11 @@ export class GraphqlService {
     })
   }
 
+  /**
+   * 
+   * @param todo 
+   * @returns 
+   */
   updateTodo(todo: Todo): Observable<Todo> {
     return new Observable<Todo>((subscriberEvent) => {
       this.apollo.mutate<TodoQueryResponse>({
@@ -174,7 +232,7 @@ export class GraphqlService {
       }, (error: any) => {
         subscriberEvent.error(error)
       })
-    }) 
+    })
   }
 
   // updateTodo2(todo: Todo): Todo | null {
