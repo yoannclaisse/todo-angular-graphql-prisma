@@ -20,6 +20,7 @@ export type Todo = {
     user: User
 }
 
+// interfaces crées pour correspondre au format donnée par le resultat des requêtes graphQL
 export interface TodosQueryResponse {
     todos: Todo[] | null;
     errors: any
@@ -29,6 +30,7 @@ export interface TodoQueryResponse {
     todo: Todo | null;
     deleteOneTodo: Todo | null
     createOneTodo: Todo | null;
+    updateOneTodo: Todo | null;
     errors: any
 }
 
