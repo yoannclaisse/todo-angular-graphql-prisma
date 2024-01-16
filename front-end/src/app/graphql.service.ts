@@ -74,7 +74,8 @@ export class GraphqlService {
     return new Observable<User>((subscriber) => {
       this.apollo.watchQuery<UserQueryResponse>({
         query: GET_USER_BY_NAME_WITH_TODOS,
-        variables: { "input": { "username": username } }
+        variables: { "input": { "username": username } },
+        fetchPolicy: "no-cache"
       }).valueChanges.subscribe((result: ApolloQueryResult<UserQueryResponse>) => {
         console.log('Result : ', result)
         const user = result.data.user
@@ -164,7 +165,7 @@ export class GraphqlService {
         }
       }).subscribe((result: MutationResult<TodoQueryResponse>) => {
         console.log("Result :", result)
-        let todo = result?.data?.deleteOneTodo
+        let todo = result?.data?.updateOneTodo
         if (!!todo) {
           subscriberEvent.next(todo)
         } else {
