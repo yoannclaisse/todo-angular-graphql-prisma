@@ -1,4 +1,5 @@
 # ================ MUTATION ==================
+# Basé sur l'interface playground de graphQL, le playground est accessible seulement mode dev
 
 # MUTATION pour créer un user
 mutation($user: UserCreateInput!){createOneUser(data: $user){id}}

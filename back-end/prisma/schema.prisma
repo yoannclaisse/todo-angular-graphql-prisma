@@ -1,13 +1,18 @@
+// Ceci est un entrypoint pour créer la DB avec prisma, il se sert des Model ci-dessous
+
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// client que j'utilise pour générer les modèles
+// genere le code pour se connecter a la DB
 generator client {
   provider = "prisma-client-js"
 }
 
+// générateur le code CRUD, les resolver et les modèles
 generator typegraphql {
+  //package node
   provider = "typegraphql-prisma"
+  //sortie
   output   = "../prisma/generated/type-graphql"
 }
 
@@ -16,6 +21,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Définit manuellemnt, peut être générer par un "prisma db pull", si la DB existe déja
 model User {
   id       Int      @id @default(autoincrement())
   username String   @unique

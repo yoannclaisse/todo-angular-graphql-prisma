@@ -1,8 +1,5 @@
 import { Module } from '@nestjs/common';
-// Ce module est importer directement car j'ai utiliser le cli de nest
-import { GraphQLModule } from '@nestjs/graphql';
-// Import de config Apollo
-import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { ApolloDriver } from '@nestjs/apollo';
 import { PrismaClient } from '@prisma/client';
 import { resolve } from 'path';
 import { TypeGraphQLModule } from "typegraphql-nestjs";
@@ -12,9 +9,8 @@ interface Context {
   prisma: PrismaClient;
 }
 
+// import généré pour la package typegraphql-prisma dans le prisma.schema
 import {
-  User,
-  Todo,
   UserRelationsResolver,
   TodoRelationsResolver,
   UserCrudResolver,
@@ -31,6 +27,7 @@ import {
       // le schema ira dans le fichier présent dans le outdir du tsconfig
       emitSchemaFile: resolve(__dirname, "./generated-schema.graphql"),
       validate: false,
+      // connection avec prisma
       context: (): Context => ( { prisma: new PrismaClient() }),
     }),
   ],
