@@ -13,7 +13,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class UserComponent {
   resultStatus: String = ""
-  // todos: Array<Todo> = []
+
   user: User = { id: 0, username: "", email: "", todos: [] }
 
   newTitle: String = ""
@@ -85,16 +85,21 @@ export class UserComponent {
     if (!!updatedTodo) {
       // updatedTodo.title = updatedTitle
       updatedTodo = { ...updatedTodo, title: updatedTitle, description: updatedDescription, completed: updatedComplete };
+      console.log(updatedTodo)
       this.GraphqlService
         .updateTodo(updatedTodo).subscribe((result: Todo) => {
           console.log("Result :", result)
           // TODO: update this.user
+        }, (error: any) => { 
+          console.log("ERROR :", error)
+          this.resultStatus = error
         })
     }
   }
 
   // Function onclick button
   userTodos(userValue: String) {
+    console.log(userValue)
     // si le champs est vide rien ne se passe
     this.resultStatus = ""
     if (!userValue) {
@@ -104,6 +109,9 @@ export class UserComponent {
     this.GraphqlService
       .getUserTodos(userValue).subscribe((result: User) => {
         this.user = result
-      }, (error: any) => { console.log("ERROR :", error) })
+      }, (error: any) => { 
+        console.log("ERROR :", error)
+        this.resultStatus = error
+      })
   }
 }
