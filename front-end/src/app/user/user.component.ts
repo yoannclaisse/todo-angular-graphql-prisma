@@ -12,35 +12,67 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './user.component.scss'
 })
 export class UserComponent {
+
+  // Ce sont des propriétées de la class UserComponent, appelé dans la class avec un this,
+  // à cause des paramètres TS on est obligé de leur mettre des valeurs par défaut
+  // comme on a pas précisé private, elles sont par défaut public
   resultStatus: String = ""
 
   user: User = { id: 0, username: "", email: "", todos: [] }
 
   newTitle: String = ""
+
   newDescription: String = ""
 
+  // Le constructor a une nouvelle propriété de class qui elle est privé
+  // On est obligé de faire ça car on ne peut pas mettre de valeur par défaut à GraphqlService
+  // NOTE : le service sera instancié la 1er fois que le composant sera instancié, si on fait appele à une aure instance du compsant, l'instance du service sera la même
+  /**
+   * 
+   * @param GraphqlService 
+   */
   constructor(private GraphqlService: GraphqlService) { }
 
+  // c'est une méthode appelé par l'evt onclick / on change dans le html
+  // Le paramètre userValue est envoyé par une variable de référence d'angular #userValue
+  // https://angular.dev/guide/templates/reference-variables#
+  /**
+   * 
+   * @param userValue 
+   * @returns 
+   */
   createUser(userValue: String) {
-    // si le champs est vide rien ne se passe
     this.resultStatus = ""
+    // si la variable (paramètre) est vide/undefined/null rien ne se passe
+    // c'est ce que fait le "!", à l'inverse si on ajoute un 2e "!", ça verifie que la variable n'est pas vide/undefined/null
     if (!userValue) {
       this.resultStatus = "please enter a name"
       return
     }
 
-    this.GraphqlService
-      .createUser(userValue).subscribe((result: User) => {
-        this.resultStatus = `${result.username} : created`
-        this.user = result
-      }, (error: any) => {
-        console.log("ERROR :", error)
-        if (String(error).includes("Unique constraint failed on the fields: (`username`)")) {
-          this.resultStatus = "user already exists"
+    // appele de la fonction createUser du service GraphqlService
+    this.GraphqlService.createUser(userValue)
+      // Le retour de la fonction est un Obresable, donc on doit souscrire à l'Observable
+      .subscribe(
+        // le premier evt d'un Observalble sera toujours next, CAD qu'on retourne une valeur si tout s'est bien passé
+        (result: User) => {
+          this.resultStatus = `${result.username} : created`
+          this.user = result
+        },
+        //  Le 2e evt d'un Observable sera toujour error
+        (error: any) => {
+          console.log("ERROR :", error)
+          if (String(error).includes("Unique constraint failed on the fields: (`username`)")) {
+            this.resultStatus = "user already exists"
+          }
         }
-      })
+      )
   }
 
+  // c'est une méthode appelé par l'evt onclick dans le html
+  // Ici on utilise pas de paramètres mais à la place on exploite les props de la Class newTitle et newDescription qui ont été liés dans le html,
+  // avec les propriétés [(ngModel)]="nom-de-la-props"
+  // https://angular.dev/guide/templates/class-binding#
   addTodo(/*title: String, description: String*/) {
     if (!this.newTitle) {
       this.resultStatus = "no title define"
@@ -54,19 +86,26 @@ export class UserComponent {
       this.resultStatus = "no user defined"
       return
     }
-    this.GraphqlService
-      .createTodo(this.newTitle, this.newDescription, this.user.id).subscribe((todo: Todo) => {
-        this.user.todos = [...this.user.todos, todo]
-        this.user.todos.push(todo)
-        if (!!this.user.todos) {
-          this.user = { ...this.user, todos: [...this.user.todos, todo] };
-        } else {
-          this.user = { ...this.user, todos: [todo] };
+    // 
+    this.GraphqlService.createTodo(this.newTitle, this.newDescription, this.user.id)
+      .subscribe(
+        (todo: Todo) => {
+          // Cette méthode "push" ne fonctionne pas pck les props de this.user sont en lecture seule
+          // this.user.todos.push(todo)
+          // A la place, on remplace la props this.user.todos par elle même avec le todo fraîchement crée
+          // this.user.todos = [...this.user.todos, todo]
+          //  Ajoute un controle si this.user.todos est vide
+          // On utilise le "!!" pour verif this.user.todos n'est pas vide/null/undifined
+          if (!!this.user.todos) {
+            this.user = { ...this.user, todos: [...this.user.todos, todo] };
+          } else {
+            this.user = { ...this.user, todos: [todo] };
+          }
+          // nettoie les champs
+          this.newTitle = '';
+          this.newDescription = '';
         }
-        // Clear the input field value
-        this.newTitle = '';
-        this.newDescription = '';
-      })
+      )
   }
 
   removeTodo(id: Number) {
@@ -90,7 +129,7 @@ export class UserComponent {
         .updateTodo(updatedTodo).subscribe((result: Todo) => {
           console.log("Result :", result)
           // TODO: update this.user
-        }, (error: any) => { 
+        }, (error: any) => {
           console.log("ERROR :", error)
           this.resultStatus = error
         })
@@ -100,8 +139,8 @@ export class UserComponent {
   // Function onclick button
   userTodos(userValue: String) {
     console.log(userValue)
-    // si le champs est vide rien ne se passe
     this.resultStatus = ""
+    // si le champs est vide rien ne se passe
     if (!userValue) {
       this.resultStatus = "please enter a name"
       return
@@ -109,7 +148,7 @@ export class UserComponent {
     this.GraphqlService
       .getUserTodos(userValue).subscribe((result: User) => {
         this.user = result
-      }, (error: any) => { 
+      }, (error: any) => {
         console.log("ERROR :", error)
         this.resultStatus = error
       })
