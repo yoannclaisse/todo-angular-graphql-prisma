@@ -1,12 +1,17 @@
-import { Component } from '@angular/core';
+import { Component, VERSION } from '@angular/core';
 import { GraphqlService } from '../graphql.service';
 import { Todo, User } from '../models/graphql.model';
 import { Apollo } from 'apollo-angular';
 import { FormsModule } from '@angular/forms';
+import { RxStompService, rxStompServiceFactory, rxStompTopicName } from '../rxstomp.service';
+import { IMessage } from '@stomp/rx-stomp';
 @Component({
   selector: 'app-user',
   standalone: true,
-  providers: [GraphqlService, Apollo],
+  providers: [GraphqlService, Apollo, {
+    provide: RxStompService,
+    useFactory: rxStompServiceFactory,
+  },],
   imports: [FormsModule],
   templateUrl: './user.component.html',
   styleUrl: './user.component.scss'
@@ -24,14 +29,31 @@ export class UserComponent {
 
   newDescription: String = ""
 
+  testSub: any
+
   // Le constructor a une nouvelle propriété de class qui elle est privé
   // On est obligé de faire ça car on ne peut pas mettre de valeur par défaut à GraphqlService
   // NOTE : le service sera instancié la 1er fois que le composant sera instancié, si on fait appele à une aure instance du compsant, l'instance du service sera la même
   /**
    * 
-   * @param GraphqlService 
+   * @param graphqlService 
    */
-  constructor(private GraphqlService: GraphqlService) { }
+  constructor(private graphqlService: GraphqlService, private rxStompService: RxStompService) {
+    // connexion à rabbitmq via un topic (salon)
+    this.testSub = rxStompService.watch(rxStompTopicName)
+    this.testSub.subscribe((message: IMessage) => {
+      console.log("RABBITMQ LOGS:", message.body)
+      const userAction = JSON.parse(message.body)
+      console.log("USERACTION", userAction)
+      if (userAction.user.id == this.user.id) {
+        if (userAction.action = "update") {
+          this.user = userAction.user
+        }
+      }
+    })
+    // const message = `Message generated at ${new Date()}`;
+    // this.rxStompService.publish({ destination: rxStompTopicName, body: message });
+  }
 
   // c'est une méthode appelé par l'evt onclick / on change dans le html
   // Le paramètre userValue est envoyé par une variable de référence d'angular #userValue
@@ -51,13 +73,19 @@ export class UserComponent {
     }
 
     // appele de la fonction createUser du service GraphqlService
-    this.GraphqlService.createUser(userValue)
+    this.graphqlService.createUser(userValue)
       // Le retour de la fonction est un Obresable, donc on doit souscrire à l'Observable
       .subscribe(
         // le premier evt d'un Observalble sera toujours next, CAD qu'on retourne une valeur si tout s'est bien passé
         (result: User) => {
           this.resultStatus = `${result.username} : created`
           this.user = result
+          // message rabbitmq
+          const userAction = {
+            "action": "create",
+            "user": this.user
+          }
+          this.rxStompService.publish({ destination: rxStompTopicName, body: JSON.stringify(userAction) });
         },
         //  Le 2e evt d'un Observable sera toujour error
         (error: any) => {
@@ -87,7 +115,7 @@ export class UserComponent {
       return
     }
     // 
-    this.GraphqlService.createTodo(this.newTitle, this.newDescription, this.user.id)
+    this.graphqlService.createTodo(this.newTitle, this.newDescription, this.user.id)
       .subscribe(
         (todo: Todo) => {
           // Cette méthode "push" ne fonctionne pas pck les props de this.user sont en lecture seule
@@ -104,17 +132,29 @@ export class UserComponent {
           // nettoie les champs
           this.newTitle = '';
           this.newDescription = '';
+          // message rabbitmq
+          const userAction = {
+            "action": "update",
+            "user": this.user
+          }
+          this.rxStompService.publish({ destination: rxStompTopicName, body: JSON.stringify(userAction) });
         }
       )
   }
 
   removeTodo(id: Number) {
-    this.GraphqlService
+    this.graphqlService
       .deleteTodo(id).subscribe((result: Todo) => {
         console.log("Result :", result)
         // le filter est un foreach avec un if dedand et retourne un autre tableau filtrer par le if
         const todos = this.user.todos.filter(todo => todo.id != id)
         this.user = { ...this.user, todos: todos };
+        // message rabbitmq
+        const userAction = {
+          "action": "update",
+          "user": this.user
+        }
+        this.rxStompService.publish({ destination: rxStompTopicName, body: JSON.stringify(userAction) });
       })
   }
 
@@ -125,10 +165,28 @@ export class UserComponent {
       // updatedTodo.title = updatedTitle
       updatedTodo = { ...updatedTodo, title: updatedTitle, description: updatedDescription, completed: updatedComplete };
       console.log(updatedTodo)
-      this.GraphqlService
-        .updateTodo(updatedTodo).subscribe((result: Todo) => {
-          console.log("Result :", result)
+      this.graphqlService
+        .updateTodo(updatedTodo).subscribe((todo: Todo) => {
+          console.log("Result :", todo)
           // TODO: update this.user
+          // on supprime l'ancien todo non mis à jour
+          let todos = this.user.todos.filter(todo => todo.id != id)
+          // On verif que la liste restante n'est pas vide
+          if (!!todos) {
+            // On ajoute le todo mis à jour
+            todos = [...todos, todo]
+          } else {
+            // On crée un tableau avec celui existant
+            todos = [todo]
+          }
+          // On affect le nouveau tableau dans this.user
+          this.user = { ...this.user, todos: todos };
+          // message rabbitmq
+          const userAction = {
+            "action": "update",
+            "user": this.user
+          }
+          this.rxStompService.publish({ destination: rxStompTopicName, body: JSON.stringify(userAction) });
         }, (error: any) => {
           console.log("ERROR :", error)
           this.resultStatus = error
@@ -145,7 +203,7 @@ export class UserComponent {
       this.resultStatus = "please enter a name"
       return
     }
-    this.GraphqlService
+    this.graphqlService
       .getUserTodos(userValue).subscribe((result: User) => {
         this.user = result
       }, (error: any) => {
