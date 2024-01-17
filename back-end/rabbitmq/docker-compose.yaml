@@ -1,11 +1,16 @@
 version: "3.2"
 services:
   rabbitmq:
-    image: rabbitmq:3-management-alpine
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    # image: rabbitmq:3-management-alpine
     container_name: "rabbitmq"
     ports:
       - 5672:5672
       # plugin pour voir ce qu'il se passe !!
       # credentials : guest guest
       - 15672:15672
+      - 61613:61613
+      - 15674:15674
     restart: unless-stopped
