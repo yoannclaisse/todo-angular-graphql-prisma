@@ -12,8 +12,8 @@ export const myRxStompConfig: RxStompConfig = {
   // Headers
   // Typical keys: login, passcode, host
   connectHeaders: {
-    login: 'guest',
-    passcode: 'guest',
+    login: environment.rabbitmqLogin,
+    passcode: environment.rabbitmqPassword,
   },
 
   // How often to heartbeat?
