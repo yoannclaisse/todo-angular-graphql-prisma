@@ -5,6 +5,7 @@ import { Apollo } from 'apollo-angular';
 import { FormsModule } from '@angular/forms';
 import { RxStompService, rxStompServiceFactory, rxStompTopicName } from '../rxstomp.service';
 import { IMessage } from '@stomp/rx-stomp';
+import { ActionMessage, UserActionMessage } from '../models/rabbitmq.model';
 @Component({
   selector: 'app-user',
   standalone: true,
@@ -43,10 +44,10 @@ export class UserComponent {
     this.testSub = rxStompService.watch(rxStompTopicName)
     this.testSub.subscribe((message: IMessage) => {
       console.log("RABBITMQ LOGS:", message.body)
-      const userAction = JSON.parse(message.body)
+      const userAction: UserActionMessage = JSON.parse(message.body)
       console.log("USERACTION", userAction)
       if (userAction.user.id == this.user.id) {
-        if (userAction.action = "update") {
+        if (userAction.action == ActionMessage.update) {
           this.user = userAction.user
         }
       }
@@ -81,8 +82,8 @@ export class UserComponent {
           this.resultStatus = `${result.username} : created`
           this.user = result
           // message rabbitmq
-          const userAction = {
-            "action": "create",
+          const userAction: UserActionMessage = {
+            "action": ActionMessage.create,
             "user": this.user
           }
           this.rxStompService.publish({ destination: rxStompTopicName, body: JSON.stringify(userAction) });
@@ -133,8 +134,8 @@ export class UserComponent {
           this.newTitle = '';
           this.newDescription = '';
           // message rabbitmq
-          const userAction = {
-            "action": "update",
+          const userAction: UserActionMessage = {
+            "action": ActionMessage.update,
             "user": this.user
           }
           this.rxStompService.publish({ destination: rxStompTopicName, body: JSON.stringify(userAction) });
@@ -150,8 +151,8 @@ export class UserComponent {
         const todos = this.user.todos.filter(todo => todo.id != id)
         this.user = { ...this.user, todos: todos };
         // message rabbitmq
-        const userAction = {
-          "action": "update",
+        const userAction: UserActionMessage = {
+          "action": ActionMessage.update,
           "user": this.user
         }
         this.rxStompService.publish({ destination: rxStompTopicName, body: JSON.stringify(userAction) });
@@ -182,8 +183,8 @@ export class UserComponent {
           // On affect le nouveau tableau dans this.user
           this.user = { ...this.user, todos: todos };
           // message rabbitmq
-          const userAction = {
-            "action": "update",
+          const userAction: UserActionMessage = {
+            "action": ActionMessage.update,
             "user": this.user
           }
           this.rxStompService.publish({ destination: rxStompTopicName, body: JSON.stringify(userAction) });
