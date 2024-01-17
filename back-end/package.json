@@ -22,6 +22,7 @@
     "rabbitmq": "cd ./rabbitmq && docker compose up --build"
   },
   "dependencies": {
+    "@graphql-tools/schema": "^10.0.2",
     "@nestjs/apollo": "^12.0.11",
     "@nestjs/common": "^10.3.0",
     "@nestjs/core": "^10.3.0",
@@ -31,11 +32,13 @@
     "apollo-server-express": "^3.13.0",
     "graphql": "^16.8.1",
     "graphql-subscriptions": "^2.0.0",
+    "graphql-ws": "^5.14.3",
     "rabbitmq-pub-sub": "^0.2.5",
     "reflect-metadata": "^0.2.1",
     "rxjs": "^7.8.1",
     "type-graphql": "^2.0.0-beta.1",
-    "typegraphql-nestjs": "^0.6.0"
+    "typegraphql-nestjs": "^0.6.0",
+    "ws": "^8.16.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
