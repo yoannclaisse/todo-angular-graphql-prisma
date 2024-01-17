@@ -35,6 +35,7 @@ const UPDATE_TODO = gql`mutation($input: TodoUpdateInput! $where: TodoWhereUniqu
     title
     description
     completed
+    id
   }
 }`
 @Injectable({
