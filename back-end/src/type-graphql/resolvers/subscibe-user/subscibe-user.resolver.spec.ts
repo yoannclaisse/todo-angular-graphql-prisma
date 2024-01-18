@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { SubscibeUserResolver } from './subscibe-user.resolver';
+import { SubscriptionResolver } from './subscibe-user.resolver';
 
-describe('SubscibeUserResolver', () => {
-  let resolver: SubscibeUserResolver;
+describe('SubscriptionResolver', () => {
+  let resolver: SubscriptionResolver;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [SubscibeUserResolver],
+      providers: [SubscriptionResolver],
     }).compile();
 
-    resolver = module.get<SubscibeUserResolver>(SubscibeUserResolver);
+    resolver = module.get<SubscriptionResolver>(SubscriptionResolver);
   });
 
   it('should be defined', () => {
