@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { RxstompService } from './rxstomp.service';
+import { RxStompService } from './rxstomp.service';
 
-describe('RxstompService', () => {
-  let service: RxstompService;
+describe('RxStompService', () => {
+  let service: RxStompService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(RxstompService);
+    service = TestBed.inject(RxStompService);
   });
 
   it('should be created', () => {

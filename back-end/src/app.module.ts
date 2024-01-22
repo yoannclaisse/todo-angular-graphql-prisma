@@ -16,6 +16,8 @@ import {
   UserCrudResolver,
   TodoCrudResolver,
 } from "../prisma/generated/type-graphql";
+import { PublishNotification, SubscriptionResolver, pubSub } from './type-graphql/resolvers/subscibe-user/subscibe-user.resolver';
+
 
 
 @Module({
@@ -29,6 +31,9 @@ import {
       validate: false,
       // connection avec prisma
       context: (): Context => ( { prisma: new PrismaClient() }),
+      pubSub: pubSub,
+      globalMiddlewares: [PublishNotification],
+      
     }),
   ],
   providers: [
@@ -37,6 +42,7 @@ import {
     UserCrudResolver,
     TodoRelationsResolver,
     TodoCrudResolver,
+    SubscriptionResolver,
   ],
 })
 export class AppModule {
