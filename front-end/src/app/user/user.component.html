@@ -1,38 +1,97 @@
 <section>
-    <input type="text" placeholder="Your Name Here !!" #userName />
-    <button class="primary" type="button" (click)="userTodos(userName.value)">
-      find your todo
+  <div class="nav-user">
+    <input
+      class="input-user"
+      type="text"
+      placeholder="Your Name Here !!"
+      #userName
+    />
+    <button
+      class="primary button-nav-user"
+      type="button"
+      (click)="userTodos(userName.value)"
+    >
+      Find your todo
     </button>
-    <button class="primary" type="button" (click)="createUser(userName.value)">
-      add user
+    <button
+      class="primary button-nav-user"
+      type="button"
+      (click)="createUser(userName.value)"
+    >
+      Add user
     </button>
-    <label>
-        {{ resultStatus }}
-    </label>
-    <ul>
-        @for (todo of user.todos; track todo.id) {
-            <li [class.checked]="todo.completed">
-              <input type="checkbox" #completed [checked]="todo.completed" (change)="changeTodo( todo.id, completed.checked, title.value, description.value)"/>
-              <input type="text" #title value="{{ todo.title }}"/>
-              <input type="text" #description value="{{ todo.description }}"/>
-              <button class="primary" type="button" (click)="removeTodo(todo.id)">
-                remove task
-              </button>
-              <button class="primary" type="button" (click)="changeTodo( todo.id, completed.checked, title.value, description.value)">
-                modify task
-              </button>
-            </li>
-          } @empty {
-            Empty list of todos
-        }
-        @if (user.id > 0) {
-          <li>
-            <input type="text" placeholder="Your title here !!" [(ngModel)]="newTitle"/>
-            <input type="text" placeholder="Your task here !!" [(ngModel)]="newDescription"/>
-            <button class="primary" type="button" (click)="addTodo()">
-              add task
-            </button>
-          </li>
-        }
+  </div>
+  <label class="status-sentence">
+    {{ resultStatus }}
+  </label>
+  <div class="container">
+    <ul class="container-todo">
+      @for (todo of user.todos; track todo.id) {
+      <div class="todo">
+        <li class="todo-detail" [class.checked]="todo.completed">
+          <input
+            type="checkbox"
+            #completed
+            [checked]="todo.completed"
+            (change)="
+              changeTodo(
+                todo.id,
+                completed.checked,
+                title.value,
+                description.value
+              )
+            "
+          />
+          <input
+            class="input-title-todo"
+            type="text"
+            #title
+            value="{{ todo.title }}"
+          />
+          <input
+            class="input-description-todo"
+            type="text"
+            #description
+            value="{{ todo.description }}"
+          />
+          <button class="primary" type="button" (click)="removeTodo(todo.id)">
+            remove task
+          </button>
+          <button
+            class="primary"
+            type="button"
+            (click)="
+              changeTodo(
+                todo.id,
+                completed.checked,
+                title.value,
+                description.value
+              )
+            "
+          >
+            modify task
+          </button>
+        </li>
+      </div>
+      } @empty { Empty list of todos } @if (user.id > 0) {
+      <li>
+        <div class="add-todo">
+          <input
+            type="text"
+            placeholder="Your title here !!"
+            [(ngModel)]="newTitle"
+          />
+          <input
+            type="text"
+            placeholder="Your task here !!"
+            [(ngModel)]="newDescription"
+          />
+          <button class="primary" type="button" (click)="addTodo()">
+            add task
+          </button>
+        </div>
+      </li>
+      }
     </ul>
+  </div>
 </section>

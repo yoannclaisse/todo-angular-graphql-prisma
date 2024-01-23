@@ -110,7 +110,7 @@ export class GraphqlService {
               subscriber.next(user)
             } else {
               // sinon l'evt "error"
-              subscriber.error("user not found")
+              subscriber.error("User not found")
             }
           },
           // le bloc error de graphQL

@@ -69,7 +69,7 @@ export class UserComponent {
     // si la variable (paramètre) est vide/undefined/null rien ne se passe
     // c'est ce que fait le "!", à l'inverse si on ajoute un 2e "!", ça verifie que la variable n'est pas vide/undefined/null
     if (!userValue) {
-      this.resultStatus = "please enter a name"
+      this.resultStatus = "Please enter a name"
       return
     }
 
@@ -92,7 +92,7 @@ export class UserComponent {
         (error: any) => {
           console.log("ERROR :", error)
           if (String(error).includes("Unique constraint failed on the fields: (`username`)")) {
-            this.resultStatus = "user already exists"
+            this.resultStatus = "User already exists"
           }
         }
       )
@@ -201,7 +201,7 @@ export class UserComponent {
     this.resultStatus = ""
     // si le champs est vide rien ne se passe
     if (!userValue) {
-      this.resultStatus = "please enter a name"
+      this.resultStatus = "Please enter a name"
       return
     }
     this.graphqlService
