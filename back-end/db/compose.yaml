@@ -36,12 +36,15 @@ services:
   #   depends_on:
   #     - postgres
 
+  # permet de garder les entités de kafka persistantes
   zookeeper:
     image: debezium/zookeeper
     ports:
       - '2181:2181'
       - '2888:2888'
       - '3888:3888'
+
+  # Outil de streaming kafka
   kafka:
     image: debezium/kafka
     ports:
@@ -56,6 +59,7 @@ services:
       - 'KAFKA_LISTENERS=LISTENER_INT://0.0.0.0:9092,LISTENER_EXT://0.0.0.0:29092'
       - KAFKA_INTER_BROKER_LISTENER_NAME=LISTENER_INT
 
+  # Connecteur à la base de donnée
   connect:
     image: debezium/connect
     ports:
