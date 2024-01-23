@@ -1,5 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { KafkaPubSub } from 'graphql-kafka-subscriptions';
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 
 async function bootstrap() {
 

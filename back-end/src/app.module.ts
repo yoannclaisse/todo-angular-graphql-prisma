@@ -3,12 +3,8 @@ import { ApolloDriver } from '@nestjs/apollo';
 import { PrismaClient } from '@prisma/client';
 import { resolve } from 'path';
 import { TypeGraphQLModule } from "typegraphql-nestjs";
-
-
-interface Context {
-  prisma: PrismaClient;
-}
-
+import { ConfigModule } from '@nestjs/config';
+import { KafkaPubSub } from 'graphql-kafka-subscriptions';
 // import généré pour la package typegraphql-prisma dans le prisma.schema
 import {
   UserRelationsResolver,
@@ -16,7 +12,18 @@ import {
   UserCrudResolver,
   TodoCrudResolver,
 } from "../prisma/generated/type-graphql";
-import { PublishNotification, SubscriptionResolver, pubSub } from './type-graphql/resolvers/subscibe-user/subscibe-user.resolver';
+
+interface Context {
+  prisma: PrismaClient;
+}
+
+// Connecteur kafka
+export const pubSub = new KafkaPubSub({
+  topic: process.env.KAFKA_TOPIC || 'tododb',
+  host: process.env.KAFKA_HOST || 'localhost',
+  port: process.env.KAFKA_PORT || '29092',
+  globalConfig: {} // options passed directly to the consumer and producer
+})
 
 
 
@@ -32,9 +39,12 @@ import { PublishNotification, SubscriptionResolver, pubSub } from './type-graphq
       // connection avec prisma
       context: (): Context => ( { prisma: new PrismaClient() }),
       pubSub: pubSub,
-      globalMiddlewares: [PublishNotification],
+      // globalMiddlewares: [PublishNotification],
       
     }),
+    ConfigModule.forRoot({
+      envFilePath: '.development.env',
+    })
   ],
   providers: [
     // register all resolvers inside `providers` of the Nest module
@@ -42,8 +52,13 @@ import { PublishNotification, SubscriptionResolver, pubSub } from './type-graphq
     UserCrudResolver,
     TodoRelationsResolver,
     TodoCrudResolver,
-    SubscriptionResolver,
   ],
 })
 export class AppModule {
+  constructor() {
+    pubSub.subscribe('pubSubChannel', this.onMessage)
+  }
+  onMessage() {
+    console.log("pubSub Message:")
+  }
 }
